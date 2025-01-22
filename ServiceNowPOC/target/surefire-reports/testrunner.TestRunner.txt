@@ -1,0 +1,7 @@
+-------------------------------------------------------------------------------
+Test set: testrunner.TestRunner
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.092 s <<< FAILURE! - in testrunner.TestRunner
+initializationError(testrunner.TestRunner)  Time elapsed: 0.007 s  <<< ERROR!
+java.lang.IllegalArgumentException: path must exist: /home/gudduboi/eclipse-workspace/ServiceNowPOC/src/test/resources/features
+
