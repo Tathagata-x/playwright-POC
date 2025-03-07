@@ -1,0 +1,73 @@
+import com.microsoft.playwright.*;
+import com.microsoft.playwright.assertions.PlaywrightAssertions;
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class LoginTest {
+    private Browser browser;
+    private Page page;
+    private LoginPage loginPage;
+    private static final String LOGIN_URL = "https://your-app-url.com/login"; // Replace with actual URL
+
+    @BeforeEach
+    public void setUp() {
+        Playwright playwright = Playwright.create();
+        browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(true));
+        page = browser.newPage();
+        loginPage = new LoginPage(page);
+        page.navigate(LOGIN_URL);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        if (browser != null) {
+            browser.close();
+        }
+    }
+
+    @Test
+    public void testSuccessfulLogin() {
+        loginPage.login("valid_username", "valid_password");
+        assertTrue(loginPage.isLoginSuccessful(), "Login should be successful");
+    }
+
+    @Test
+    public void testInvalidUsername() {
+        loginPage.login("invalid_user", "valid_password");
+        assertFalse(loginPage.isLoginSuccessful(), "Login should fail");
+        PlaywrightAssertions.assertThat(page.locator("text=User name or password invalid"))
+            .isVisible();
+    }
+
+    @Test
+    public void testInvalidPassword() {
+        loginPage.login("valid_username", "invalid_password");
+        assertFalse(loginPage.isLoginSuccessful(), "Login should fail");
+        PlaywrightAssertions.assertThat(page.locator("text=User name or password invalid"))
+            .isVisible();
+    }
+
+    @Test
+    public void testEmptyUsername() {
+        loginPage.login("", "valid_password");
+        assertFalse(loginPage.isLoginSuccessful(), "Login should fail");
+        PlaywrightAssertions.assertThat(page.locator("text=User name or password invalid"))
+            .isVisible();
+    }
+
+    @Test
+    public void testEmptyPassword() {
+        loginPage.login("valid_username", "");
+        assertFalse(loginPage.isLoginSuccessful(), "Login should fail");
+        PlaywrightAssertions.assertThat(page.locator("text=User name or password invalid"))
+            .isVisible();
+    }
+
+    @Test
+    public void testEmptyCredentials() {
+        loginPage.login("", "");
+        assertFalse(loginPage.isLoginSuccessful(), "Login should fail");
+        PlaywrightAssertions.assertThat(page.locator("text=User name or password invalid"))
+            .isVisible();
+    }
+}
